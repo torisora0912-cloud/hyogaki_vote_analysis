@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>就職氷河期世代の投票率分析｜2026年衆院選</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e0f;
+    --surface: #141618;
+    --surface2: #1c1f22;
+    --border: #2a2d32;
+    --accent: #e8c96a;
+    --accent2: #5b9cf6;
+    --accent3: #f27e5f;
+    --text: #e8e6e1;
+    --text-muted: #7a7e85;
+    --text-dim: #4a4f58;
+    --hyogaki: #e8c96a;
+    --hyogaki-bg: rgba(232, 201, 106, 0.08);
+    --rise: #64d98a;
+    --avg: #5b9cf6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  }
+  .header-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  h1 span {
+    color: var(--accent);
+  }
+  .header-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  /* ── KPI CARDS ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+  }
+  .kpi.highlight {
+    border-color: var(--accent);
+    background: var(--hyogaki-bg);
+  }
+  .kpi-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+  .kpi-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+    line-height: 1;
+  }
+  .kpi.highlight .kpi-value {
+    color: var(--accent);
+  }
+  .kpi-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--rise);
+    margin-top: 0.25rem;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-left: 2px solid var(--accent);
+    padding-left: 0.6rem;
+    margin: 2rem 0 1rem;
+  }
+
+  /* ── BAR CHART ── */
+  .chart-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .chart-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 52px;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.55rem;
+  }
+  .chart-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .bar-track {
+    background: var(--surface2);
+    border-radius: 3px;
+    height: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent2);
+    position: relative;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: barIn 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes barIn {
+    from { width: 0 !important; }
+  }
+  .bar-fill.hyogaki {
+    background: linear-gradient(90deg, #d4a82a, var(--accent));
+  }
+  .bar-fill.avg-line::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: transparent;
+  }
+  .chart-pct {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text);
+    text-align: right;
+  }
+  .chart-pct.hyogaki-pct {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .chart-row.hyogaki-row .chart-label {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .chart-row.hyogaki-row {
+    background: var(--hyogaki-bg);
+    border-radius: 6px;
+    padding: 2px 4px;
+  }
+
+  /* avg reference line */
+  .avg-ref {
+    position: relative;
+    margin: -0.2rem 0 0.5rem;
+    padding-left: 60px;
+  }
+  .avg-marker {
+    position: relative;
+    height: 1px;
+  }
+
+  /* ── DELTA CHART ── */
+  .delta-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 52px;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .delta-bar-track {
+    background: var(--surface2);
+    border-radius: 3px;
+    height: 12px;
+    overflow: hidden;
+  }
+  .delta-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--rise);
+    opacity: 0.6;
+    animation: barIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .delta-fill.hyogaki-delta {
+    opacity: 1;
+    background: linear-gradient(90deg, #5ba87c, var(--rise));
+  }
+  .delta-row.hyogaki-row .chart-label {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .delta-row.hyogaki-row {
+    background: var(--hyogaki-bg);
+    border-radius: 6px;
+    padding: 2px 4px;
+  }
+  .delta-row.hyogaki-row .chart-pct {
+    color: var(--rise);
+    font-weight: 700;
+  }
+
+  /* ── ANALYSIS TEXT BLOCK ── */
+  .analysis-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .analysis-block h3 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .analysis-block h3 .icon {
+    font-size: 1rem;
+  }
+  .analysis-block p {
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+  .analysis-block p strong {
+    color: var(--text);
+  }
+  .analysis-block p .accent {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .analysis-block p .green {
+    color: var(--rise);
+    font-weight: 600;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    border: 1px solid var(--accent);
+    background: var(--hyogaki-bg);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .highlight-box .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .highlight-box p {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .cmp-table thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 0.5rem 0.5rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+  .cmp-table td {
+    padding: 0.55rem 0.5rem;
+    border-bottom: 1px solid var(--dim, #1e2024);
+    color: var(--text-muted);
+    vertical-align: middle;
+  }
+  .cmp-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .cmp-table tbody tr.hyogaki-tr {
+    background: var(--hyogaki-bg);
+  }
+  .cmp-table tbody tr.hyogaki-tr td {
+    color: var(--text);
+  }
+  .cmp-table .age-cell {
+    font-weight: 500;
+  }
+  .cmp-table .age-cell.is-hyogaki {
+    color: var(--accent);
+  }
+  .cmp-table .pct-cell {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+  }
+  .cmp-table .pct-cell.is-hyogaki {
+    color: var(--accent);
+  }
+  .delta-pill {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    background: rgba(100, 217, 138, 0.12);
+    color: var(--rise);
+  }
+  .delta-pill.big {
+    background: rgba(100, 217, 138, 0.22);
+    font-weight: 700;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">2026年衆院選｜投票率分析レポート</div>
+  <h1>就職氷河期世代は<span>動いた</span></h1>
+  <div class="header-sub">40〜54歳の投票行動と前回比較｜全国抽出調査結果（2026年3月16日公表）をもとに</div>
+</header>
+
+<main>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi highlight">
+      <div class="kpi-label">氷河期中核層<br>40〜54歳 平均</div>
+      <div class="kpi-value">58.3<small style="font-size:1rem">%</small></div>
+      <div class="kpi-sub">▲ +4.2pt 前回比</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">全体投票率</div>
+      <div class="kpi-value">56.3<small style="font-size:1rem">%</small></div>
+      <div class="kpi-sub" style="color:var(--avg);">全国平均</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">最大上昇幅<br>35〜39歳</div>
+      <div class="kpi-value">+5.4<small style="font-size:1rem">pt</small></div>
+      <div class="kpi-sub" style="color:var(--text-muted);">全年代最高</div>
+    </div>
+  </div>
+
+  <!-- BAR CHART: 投票率 -->
+  <div class="section-title">年代別 投票率（今回）</div>
+  <div class="chart-area">
+    <!-- avg guide -->
+    <div style="position:relative;margin-bottom:0.8rem;padding-left:68px;padding-right:56px;">
+      <div style="position:relative;height:0;">
+        <!-- 56.26% → bar width reference = 56.26/75 = 75% -->
+        <div style="position:absolute;left:calc(56.26% * 0.87);top:-6px;width:1px;height:200px;background:var(--avg);opacity:0.3;pointer-events:none;z-index:1;"></div>
+        <div style="position:absolute;left:calc(56.26% * 0.87 + 4px);top:-6px;font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--avg);opacity:0.7;">全体平均 56.26%</div>
+      </div>
+    </div>
+
+    <!-- max: 70% → scale to width: val/70*100% -->
+    <div id="bars"></div>
+  </div>
+
+  <!-- DELTA CHART: 前回比 -->
+  <div class="section-title">年代別 前回比（前回2024年比）</div>
+  <div class="chart-area">
+    <div id="deltas"></div>
+  </div>
+
+  <!-- 全件テーブル -->
+  <div class="section-title">データ全件</div>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>年代</th>
+        <th>投票率（今回）</th>
+        <th>前回比（2024年）</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <!-- ANALYSIS -->
+  <div class="section-title">分析・考察</div>
+
+  <div class="highlight-box">
+    <div class="eyebrow">Key Finding</div>
+    <p>就職氷河期世代の中核（40〜54歳）は<strong>全体平均を上回る投票率</strong>を維持しながら、前回比でも安定した上昇を記録。この世代の政治的覚醒が数字に表れ始めている。</p>
+  </div>
+
+  <div class="analysis-block">
+    <h3><span class="icon">📈</span>全体を牽引する高い水準</h3>
+    <p>
+      40代前半（40〜44歳）で<strong class="accent">55.82%</strong>、40代後半（45〜49歳）で<strong class="accent">58.15%</strong>、50代前半（50〜54歳）では<strong class="accent">61.04%</strong>に達し、全体平均（56.26%）を確実に押し上げる厚みのある基盤となっている。特に50〜54歳は61%超えと、現役世代の中では際立って高い水準だ。
+    </p>
+  </div>
+
+  <div class="analysis-block">
+    <h3><span class="icon">🔺</span>着実な関心の高まり</h3>
+    <p>
+      前回比の上昇幅は<strong class="green">+3.64pt〜+4.82pt</strong>。全年代で最大の伸びを示した30代（35〜39歳の+5.39pt、30〜34歳の+5.06pt）にわずかに及ばないものの、<strong>40代の+4.82ptは全年代で3番目の高さ</strong>。長引く物価高・雇用環境・社会保障の揺らぎへの切実な関心が、この伸びの背景にあると読める。
+    </p>
+  </div>
+
+  <div class="analysis-block">
+    <h3><span class="icon">🧊</span>氷河期世代の政治的転換点？</h3>
+    <p>
+      30代と氷河期世代（40〜54歳）で伸び率が高い一方、65〜69歳（+1.50pt）・70歳以上（+0.50pt）の伸びは限定的。<strong>相対的に若い世代ほど今回の選挙に新たな関心を持って臨んだ</strong>ことが浮かび上がる。氷河期世代にとって、今選挙は「声を上げる選択」への緩やかな転換点となった可能性がある。
+    </p>
+  </div>
+
+  <div class="analysis-block">
+    <h3><span class="icon">⚖️</span>シルバー民主主義との差はまだ大きい</h3>
+    <p>
+      65〜69歳の投票率は<strong class="accent">69.80%</strong>。氷河期世代中核の平均（約58%）との差は依然として<strong>約10〜14ポイント</strong>。投票率の差が政策配分の優先順位に直結する構造は続いており、氷河期世代が政治的に可視化されるには、今回の上昇を定着・拡大させる継続的な取り組みが不可欠だ。
+    </p>
+  </div>
+
+</main>
+
+<footer>SOURCE: 2026年衆院選 全国抽出調査（2026.03.16公表） ／ 分析: 居酒屋氷河期世代</footer>
+
+<script>
+const data = [
+  { age: '18・19歳', rate: 43.45, delta: 4.02, hyogaki: false },
+  { age: '20〜24歳', rate: 38.21, delta: 4.11, hyogaki: false },
+  { age: '25〜29歳', rate: 43.39, delta: 5.20, hyogaki: false },
+  { age: '30〜34歳', rate: 49.16, delta: 5.06, hyogaki: false },
+  { age: '35〜39歳', rate: 52.41, delta: 5.39, hyogaki: false },
+  { age: '40〜44歳', rate: 55.82, delta: 4.82, hyogaki: true },
+  { age: '45〜49歳', rate: 58.15, delta: 4.15, hyogaki: true },
+  { age: '50〜54歳', rate: 61.04, delta: 3.64, hyogaki: true },
+  { age: '55〜59歳', rate: 63.50, delta: 2.80, hyogaki: false },
+  { age: '60〜64歳', rate: 68.20, delta: 2.10, hyogaki: false },
+  { age: '65〜69歳', rate: 69.80, delta: 1.50, hyogaki: false },
+  { age: '70歳以上', rate: 61.20, delta: 0.50, hyogaki: false },
+];
+
+const MAX_RATE = 72;
+const MAX_DELTA = 6;
+
+// BAR CHART
+const barsEl = document.getElementById('bars');
+data.forEach((d, i) => {
+  const widthPct = (d.rate / MAX_RATE * 100).toFixed(1);
+  const delay = i * 0.06;
+  barsEl.innerHTML += `
+    <div class="chart-row ${d.hyogaki ? 'hyogaki-row' : ''}">
+      <div class="chart-label">${d.age}</div>
+      <div class="bar-track">
+        <div class="bar-fill ${d.hyogaki ? 'hyogaki' : ''}"
+          style="width:${widthPct}%;animation-delay:${delay}s"></div>
+      </div>
+      <div class="chart-pct ${d.hyogaki ? 'hyogaki-pct' : ''}">${d.rate}%</div>
+    </div>`;
+});
+
+// DELTA CHART
+const deltasEl = document.getElementById('deltas');
+data.forEach((d, i) => {
+  const widthPct = (d.delta / MAX_DELTA * 100).toFixed(1);
+  const delay = i * 0.06;
+  deltasEl.innerHTML += `
+    <div class="delta-row ${d.hyogaki ? 'hyogaki-row' : ''}">
+      <div class="chart-label">${d.age}</div>
+      <div class="delta-bar-track">
+        <div class="delta-fill ${d.hyogaki ? 'hyogaki-delta' : ''}"
+          style="width:${widthPct}%;animation-delay:${delay}s"></div>
+      </div>
+      <div class="chart-pct ${d.hyogaki ? '' : ''}" style="color:var(--rise);">+${d.delta}pt</div>
+    </div>`;
+});
+
+// TABLE
+const tbody = document.getElementById('tableBody');
+data.forEach(d => {
+  const bigDelta = d.delta >= 4.5;
+  const note = d.hyogaki ? '<span style="color:var(--accent);font-size:0.65rem;">◆ 氷河期世代中核</span>'
+    : d.age === '35〜39歳' ? '<span style="color:var(--rise);font-size:0.65rem;">最高伸び率</span>' : '';
+  tbody.innerHTML += `
+    <tr class="${d.hyogaki ? 'hyogaki-tr' : ''}">
+      <td class="age-cell ${d.hyogaki ? 'is-hyogaki' : ''}">${d.age}</td>
+      <td class="pct-cell ${d.hyogaki ? 'is-hyogaki' : ''}">${d.rate}%</td>
+      <td><span class="delta-pill ${bigDelta ? 'big' : ''}">+${d.delta}pt</span></td>
+      <td>${note}</td>
+    </tr>`;
+});
+</script>
+</body>
+</html>
